@@ -19,6 +19,7 @@ interface AgentPlannerViewProps {
   identifiedRisks: Array<{ itemId: string; itemName: string; reason: string; severity: string }>;
   assumptions: string[];
   agentProvider: string;
+  fallbackNotice?: string;
 }
 
 export const AgentPlannerView: React.FC<AgentPlannerViewProps> = ({
@@ -33,6 +34,7 @@ export const AgentPlannerView: React.FC<AgentPlannerViewProps> = ({
   identifiedRisks,
   assumptions,
   agentProvider,
+  fallbackNotice,
 }) => {
   const [filter, setFilter] = useState<'all' | 'pending' | 'resolved'>('all');
 
@@ -114,6 +116,13 @@ export const AgentPlannerView: React.FC<AgentPlannerViewProps> = ({
           <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
             {executiveSummary}
           </p>
+
+          {fallbackNotice && (
+            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-900 dark:text-blue-200">
+              <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+              <span><strong>Resilience Telemetry:</strong> {fallbackNotice}</span>
+            </div>
+          )}
 
           {/* Identified Hazards & Assumptions */}
           <div className="grid md:grid-cols-2 gap-4 pt-2">

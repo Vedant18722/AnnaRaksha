@@ -34,6 +34,17 @@ import {
   INITIAL_AUDIT_LOGS,
 } from './data/seedData.ts';
 import { createAuditRecord } from './utils/auditLogger.ts';
+import {
+  loadStoredItems,
+  persistStoredItems,
+  loadStoredActions,
+  persistStoredActions,
+  loadStoredDispatches,
+  persistStoredDispatches,
+  loadStoredAuditLogs,
+  persistStoredAuditLogs,
+  resetAllStoredData,
+} from './utils/storage.ts';
 import { CheckCircle2, AlertTriangle, X, Sparkles } from 'lucide-react';
 import { useI18n } from './context/I18nContext.tsx';
 
@@ -43,69 +54,13 @@ export default function App() {
   // Navigation Tab State
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
 
-  // Core Data Stores with localStorage persistence
-  const [items, setItems] = useState<InventoryItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('annaraksha_items_v2');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.warn('Could not read saved items from localStorage');
-    }
-    return generateSeedInventory();
-  });
-
+  // Core Data Stores with localStorage & session persistence
+  const [items, setItems] = useState<InventoryItem[]>(() => loadStoredItems());
   const [recipients] = useState<RecipientOrg[]>(SEED_RECIPIENT_ORGS);
   const [recipes] = useState<RepurposeRecipe[]>(SEED_REPURPOSE_RECIPES);
-
-  const [proposedActions, setProposedActions] = useState<ProposedAction[]>(() => {
-    try {
-      const saved = localStorage.getItem('annaraksha_actions_v2');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return [];
-  });
-
-  const [dispatches, setDispatches] = useState<RedistributionDispatch[]>(() => {
-    try {
-      const saved = localStorage.getItem('annaraksha_dispatches_v2');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return [
-      {
-        id: 'DSP-2026-1049',
-        actionId: 'ACT-INIT-01',
-        createdAt: new Date(Date.now() - 12 * 3600 * 1000).toISOString(),
-        pickupWindow: 'Within 2 hours',
-        recipientName: "Sneha Care Children's Home & Mess",
-        recipientPhone: '+1 (555) 234-5678',
-        recipientAddress: '44 Campus Road, North Ward (1.8 km)',
-        contactPerson: 'Sister Mary Joseph',
-        items: [
-          {
-            name: 'Breakfast Sandwich Loaves',
-            batchNumber: 'LOT-BR-1102',
-            quantity: 20,
-            unit: 'units',
-            storage: 'ambient',
-            tempCheckPassed: true,
-          },
-        ],
-        totalKg: 10,
-        requiresColdChain: false,
-        status: 'collected',
-        authorizedBy: 'Campus Kitchen Steward',
-        notes: 'Handed over directly to volunteer van driver.',
-      },
-    ];
-  });
-
-  const [auditLogs, setAuditLogs] = useState<AuditRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('annaraksha_audit_v2');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return INITIAL_AUDIT_LOGS;
-  });
+  const [proposedActions, setProposedActions] = useState<ProposedAction[]>(() => loadStoredActions());
+  const [dispatches, setDispatches] = useState<RedistributionDispatch[]>(() => loadStoredDispatches());
+  const [auditLogs, setAuditLogs] = useState<AuditRecord[]>(() => loadStoredAuditLogs());
 
   // Agent State
   const [isLoadingPlanner, setIsLoadingPlanner] = useState<boolean>(false);
@@ -138,30 +93,39 @@ export default function App() {
     }, 4500);
   }, []);
 
-  // Sync to localStorage
+  const [fallbackNotice, setFallbackNotice] = useState<string | undefined>(undefined);
+
+  // Sync to storage whenever state updates
   useEffect(() => {
-    try {
-      localStorage.setItem('annaraksha_items_v2', JSON.stringify(items));
-    } catch (e) {}
+    persistStoredItems(items);
   }, [items]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('annaraksha_actions_v2', JSON.stringify(proposedActions));
-    } catch (e) {}
+    persistStoredActions(proposedActions);
   }, [proposedActions]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('annaraksha_dispatches_v2', JSON.stringify(dispatches));
-    } catch (e) {}
+    persistStoredDispatches(dispatches);
   }, [dispatches]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('annaraksha_audit_v2', JSON.stringify(auditLogs));
-    } catch (e) {}
+    persistStoredAuditLogs(auditLogs);
   }, [auditLogs]);
+
+  // Container session hydration: sync with server in-memory inventory on startup
+  useEffect(() => {
+    fetch('/api/inventory')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data.items) && data.items.length > 0) {
+          setItems(data.items);
+          persistStoredItems(data.items);
+        } else if (items.length > 0) {
+          persistStoredItems(items);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Check backend health
   useEffect(() => {
@@ -209,6 +173,7 @@ export default function App() {
     }
 
     setItems(updated);
+    persistStoredItems(updated);
   };
 
   const handleDeleteItem = (itemId: string) => {
@@ -217,6 +182,7 @@ export default function App() {
 
     const updated = items.filter((i) => i.id !== itemId);
     setItems(updated);
+    persistStoredItems(updated);
 
     const record = createAuditRecord({
       actionId: `DEL-${itemId}`,
@@ -231,9 +197,11 @@ export default function App() {
     showToast(`Removed '${target.name}' from active records.`, 'info');
   };
 
-  // Agent Planner Execution Handler
+  // Agent Planner Execution Handler with debouncing
   const handleRunPlanner = async () => {
+    if (isLoadingPlanner) return;
     setIsLoadingPlanner(true);
+    setFallbackNotice(undefined);
     try {
       const response = await fetch('/api/agent/plan', {
         method: 'POST',
@@ -254,7 +222,11 @@ export default function App() {
       setIdentifiedRisks(data.identifiedRisks || []);
       setAssumptions(data.assumptions || []);
       setProposedActions(data.proposedActions || []);
-      setAgentProvider(data.provider || 'Google Gemini 2.5 Flash');
+      persistStoredActions(data.proposedActions || []);
+      setAgentProvider(data.provider || 'Google Gemini 3.8 Flash');
+      if (data.fallbackNotice) {
+        setFallbackNotice(data.fallbackNotice);
+      }
 
       // Record audit of agent run
       const record = createAuditRecord({
@@ -311,6 +283,7 @@ export default function App() {
       return i;
     });
     setItems(updatedItems);
+    persistStoredItems(updatedItems);
 
     // 2. Mark Action as Approved
     const updatedActions = proposedActions.map((a) => {
@@ -324,6 +297,7 @@ export default function App() {
       return a;
     });
     setProposedActions(updatedActions);
+    persistStoredActions(updatedActions);
 
     // 3. If NGO Donation, create formal Dispatch Transfer
     let newDispatch: RedistributionDispatch | null = null;
@@ -353,7 +327,11 @@ export default function App() {
         authorizedBy: 'Campus Kitchen Manager (Approved)',
         notes: `Transfer authorized under action ${action.id}.`,
       };
-      setDispatches((prev) => [newDispatch!, ...prev]);
+      setDispatches((prev) => {
+        const next = [newDispatch!, ...prev];
+        persistStoredDispatches(next);
+        return next;
+      });
     }
 
     // 4. Create Immutable Signed Audit Record
@@ -375,7 +353,11 @@ export default function App() {
         mealsGenerated: Math.round(approvedQuantity * 2.2),
       },
     });
-    setAuditLogs((prev) => [auditRecord, ...prev]);
+    setAuditLogs((prev) => {
+      const next = [auditRecord, ...prev];
+      persistStoredAuditLogs(next);
+      return next;
+    });
 
     showToast(
       `Approved: Allocated ${approvedQuantity} ${targetItem.unit} ${targetItem.name}. Audit signed.`,
@@ -398,6 +380,7 @@ export default function App() {
       return a;
     });
     setProposedActions(updatedActions);
+    persistStoredActions(updatedActions);
 
     const record = createAuditRecord({
       actionId,
@@ -408,7 +391,11 @@ export default function App() {
       itemId: action.targetItemId,
       itemName: action.itemName,
     });
-    setAuditLogs((prev) => [record, ...prev]);
+    setAuditLogs((prev) => {
+      const next = [record, ...prev];
+      persistStoredAuditLogs(next);
+      return next;
+    });
 
     showToast(`Declined proposal: ${action.itemName}. Rejection logged in audit trail.`, 'info');
   };
@@ -416,6 +403,7 @@ export default function App() {
   const handleUpdateDispatchStatus = (dispatchId: string, newStatus: RedistributionDispatch['status']) => {
     const updated = dispatches.map((d) => (d.id === dispatchId ? { ...d, status: newStatus } : d));
     setDispatches(updated);
+    persistStoredDispatches(updated);
 
     const target = dispatches.find((d) => d.id === dispatchId);
     const record = createAuditRecord({
@@ -425,20 +413,20 @@ export default function App() {
       summary: `Updated dispatch ${dispatchId} status to '${newStatus}'`,
       details: `Recipient: ${target?.recipientName}`,
     });
-    setAuditLogs((prev) => [record, ...prev]);
+    setAuditLogs((prev) => {
+      const next = [record, ...prev];
+      persistStoredAuditLogs(next);
+      return next;
+    });
     showToast(`Dispatch ${dispatchId} status updated to '${newStatus}'.`, 'success');
   };
 
   const handleResetData = () => {
-    const fresh = generateSeedInventory();
-    setItems(fresh);
-    setProposedActions([]);
-    setDispatches([]);
-    setAuditLogs(INITIAL_AUDIT_LOGS);
-    localStorage.removeItem('annaraksha_items_v2');
-    localStorage.removeItem('annaraksha_actions_v2');
-    localStorage.removeItem('annaraksha_dispatches_v2');
-    localStorage.removeItem('annaraksha_audit_v2');
+    const fresh = resetAllStoredData();
+    setItems(fresh.items);
+    setProposedActions(fresh.actions);
+    setDispatches(fresh.dispatches);
+    setAuditLogs(fresh.auditLogs);
     showToast('Reset sample canteen stock and logs.', 'info');
   };
 
@@ -558,6 +546,7 @@ export default function App() {
             identifiedRisks={identifiedRisks}
             assumptions={assumptions}
             agentProvider={agentProvider}
+            fallbackNotice={fallbackNotice}
           />
         )}
 

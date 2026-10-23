@@ -305,6 +305,14 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               <span>Pending in Gate: {actionStats.pending}</span>
             </div>
           </div>
+
+          {/* Transparent Storage & Methodology Disclosure */}
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex items-start gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-800 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <p>
+              <strong>Transparency Disclosure:</strong> Analytics and ESG metrics are computed directly from verified canteen ledger activity in this session. Inventory persists locally in your browser storage; it is not multi-user cloud synchronized.
+            </p>
+          </div>
         </div>
       </div>
     </div>

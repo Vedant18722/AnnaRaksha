@@ -34,6 +34,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Container-level session inventory persistence store
+let sessionInventory: InventoryItem[] = [];
+
+app.get('/api/inventory', (req, res) => {
+  res.json({ items: sessionInventory });
+});
+
+app.post('/api/inventory', (req, res) => {
+  if (Array.isArray(req.body.items)) {
+    sessionInventory = req.body.items;
+  }
+  res.json({ success: true, count: sessionInventory.length });
+});
+
+app.post('/api/inventory/reset', (req, res) => {
+  sessionInventory = [];
+  res.json({ success: true });
+});
+
 /**
  * Deterministic Heuristic Planner: Fallback and verification benchmark.
  * Guarantees zero downtime and 100% demo reliability even if offline or lacking API keys.
@@ -167,9 +186,17 @@ function generateDeterministicPlan(
   };
 }
 
+// Plan Debounce Cache to prevent 429 quota exhaustion and duplicate requests
+interface CachedPlan {
+  hash: string;
+  response: any;
+  timestamp: number;
+}
+let planCache: CachedPlan | null = null;
+
 /**
  * Structured Agentic Plan Endpoint
- * Leverages Gemini 2.5 Flash with structured schema when API key is provided,
+ * Leverages Gemini with structured schema when API key is provided,
  * otherwise gracefully falls back to deterministic heuristic planner.
  */
 app.post('/api/agent/plan', async (req, res) => {
@@ -180,12 +207,20 @@ app.post('/api/agent/plan', async (req, res) => {
     return;
   }
 
+  // Check debounce cache for rapid duplicate calls with identical inventory state
+  const fingerprint = JSON.stringify(inventory.map((i: any) => `${i.id}-${i.quantity}-${i.expiryDate}-${i.status}`));
+  if (planCache && planCache.hash === fingerprint && Date.now() - planCache.timestamp < 45000) {
+    res.json(planCache.response);
+    return;
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   const isKeyUsable = apiKey && apiKey !== 'MY_GEMINI_API_KEY';
 
   if (!isKeyUsable) {
     // Graceful deterministic fallback
     const fallbackPlan = generateDeterministicPlan(inventory, recipients, recipes);
+    planCache = { hash: fingerprint, response: fallbackPlan, timestamp: Date.now() };
     res.json(fallbackPlan);
     return;
   }
@@ -332,34 +367,69 @@ Generate a comprehensive mitigation plan for items approaching expiry or with hi
       }
     }
 
-    res.json({
+    const payload = {
       executiveSummary: parsed.executiveSummary || 'Plan synthesized successfully.',
       identifiedRisks: parsed.identifiedRisks || [],
       assumptions: parsed.assumptions || [],
       proposedActions: validatedActions,
       provider: activeModel,
-    });
+    };
+
+    planCache = { hash: fingerprint, response: payload, timestamp: Date.now() };
+    res.json(payload);
   } catch (error: any) {
     const errorStatus = error?.status || error?.code || 'UNKNOWN';
     const isModelNotFound = error?.message?.includes('not found') || errorStatus === 404 || errorStatus === 'NOT_FOUND';
-    const isRateLimit = errorStatus === 429 || error?.message?.includes('quota');
+    const isRateLimit = errorStatus === 429 || error?.message?.includes('quota') || error?.message?.includes('429');
     const isAuthError = errorStatus === 401 || errorStatus === 403;
+    const isServiceUnavailable =
+      errorStatus === 503 ||
+      error?.message?.includes('503') ||
+      error?.message?.includes('Service Unavailable') ||
+      error?.message?.includes('overloaded');
 
-    console.warn(`[Gemini API] Category: ${isModelNotFound ? 'MODEL_NOT_FOUND' : isRateLimit ? 'RATE_LIMIT' : isAuthError ? 'AUTH_ERROR' : 'API_ERROR'}. Error message: ${error?.message}`);
+    console.warn(
+      `[Gemini API] Category: ${
+        isModelNotFound
+          ? 'MODEL_NOT_FOUND'
+          : isRateLimit
+          ? 'RATE_LIMIT'
+          : isAuthError
+          ? 'AUTH_ERROR'
+          : isServiceUnavailable
+          ? 'SERVICE_UNAVAILABLE'
+          : 'API_ERROR'
+      }. Error message: ${error?.message}`
+    );
 
     const fallback = generateDeterministicPlan(inventory, recipients, recipes);
-    res.json({
+    const fallbackNotice = isModelNotFound
+      ? 'Model unavailable. Executed rule-based deterministic planner following identical safety guardrails.'
+      : isRateLimit
+      ? 'API rate limit encountered (429). Executed policy-compliant deterministic planner without blocking.'
+      : isServiceUnavailable
+      ? 'Gemini service temporarily unavailable (503). Executed policy-compliant deterministic planner.'
+      : isAuthError
+      ? 'API key unauthorized. Executed rule-based deterministic planner.'
+      : 'API call timed out. Executed rule-based deterministic planner.';
+
+    const fallbackResult = {
       ...fallback,
       provider: 'deterministic_fallback_on_error',
-      fallbackNotice: isModelNotFound
-        ? 'Model unavailable. Executed rule-based deterministic planner following identical safety guardrails.'
+      fallbackNotice,
+      diagnosticErrorCategory: isModelNotFound
+        ? 'MODEL_NOT_FOUND'
         : isRateLimit
-        ? 'API rate limit encountered. Executed rule-based deterministic planner.'
+        ? 'RATE_LIMIT'
         : isAuthError
-        ? 'API key unauthorized. Executed rule-based deterministic planner.'
-        : 'API call timed out. Executed rule-based deterministic planner.',
-      diagnosticErrorCategory: isModelNotFound ? 'MODEL_NOT_FOUND' : isRateLimit ? 'RATE_LIMIT' : isAuthError ? 'AUTH_ERROR' : 'API_ERROR',
-    });
+        ? 'AUTH_ERROR'
+        : isServiceUnavailable
+        ? 'SERVICE_UNAVAILABLE'
+        : 'API_ERROR',
+    };
+
+    planCache = { hash: fingerprint, response: fallbackResult, timestamp: Date.now() };
+    res.json(fallbackResult);
   }
 });
 
