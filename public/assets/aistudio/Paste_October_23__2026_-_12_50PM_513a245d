@@ -1,0 +1,493 @@
+You are a senior full-stack engineer, AI agent developer, UI/UX designer, security engineer, accessibility specialist, and QA automation engineer. Your task is to thoroughly audit, test, repair, and improve my EXISTING Google AI Studio application.
+
+PROJECT NAME: AnnaRaksha (अन्नरक्षा)
+TAGLINE: Predict. Prevent. Redistribute.
+PROJECT TYPE: AI-powered food inventory, expiry prevention, surplus forecasting, and food waste reduction system using an agentic AI workflow.
+
+IMPORTANT: Work on the CURRENT project and inspect its existing source code before changing anything. Do not blindly rebuild the application, delete working features, replace real functionality with hardcoded demos, or remove the existing Generate Agent Solution feature. Preserve the best working parts of the current Max-mode version. Make changes incrementally and verify them. If a major architectural change is genuinely necessary, explain why before proceeding.
+
+PRIMARY GOAL:
+Deliver a polished, responsive, secure and reliable application in which users can manage food inventory, detect expiry risk, receive AI-generated recommendations, review agent-proposed actions, approve or reject actions, see legitimate state changes, and review a trustworthy audit history. Every visible interactive control must have a working, appropriate outcome.
+
+PHASE 1 — INSPECT THE CURRENT PROJECT
+1. Identify the framework, application entry points, routes, components, styling, dependencies, backend, persistence mechanism, AI provider integration and available testing tools.
+2. Identify all existing pages, tabs, forms, dropdowns, buttons, agent tools, APIs and data models.
+3. Locate bugs, broken imports, missing handlers, placeholder buttons, runtime errors, duplicate components, invalid routes, inaccessible controls, security weaknesses and mobile layout issues.
+4. Check whether the existing Generate Agent Solution feature actually generates context-aware recommendations and whether approval/rejection causes verified state changes.
+5. Check whether the Gemini model identifier and API integration are valid for the configured environment. Do not assume a model exists or an API is configured without verification.
+6. Produce a short prioritized list of critical problems, then fix them. Do not stop after writing a plan; proceed with implementation and tests in this task.
+7. Do not remove working functionality simply to make the code shorter.
+
+PHASE 2 — BRAND AND VISUAL DESIGN
+Rename the user-facing product to AnnaRaksha (अन्नरक्षा) consistently in the header, home page, navigation, login page, dashboard and page titles. Use readable Devanagari text with a compatible font fallback.
+
+Design direction:
+- Professional Indian food-tech and sustainability product.
+- Primary colours: deep forest green, fresh leaf green, warm cream, off-white and restrained saffron accents.
+- Use dark green for primary actions, cream or white for light surfaces, and muted earthy tones for secondary elements.
+- Dark mode should use deep charcoal/green backgrounds, readable off-white text, subtle borders and accessible contrast.
+- Use consistent spacing, rounded cards, clean typography, clear hierarchy, meaningful icons and polished empty/loading/error states.
+- Avoid excessive gradients, neon colours, clutter, huge text, unnecessary decoration and distracting animations.
+- The interface should feel suitable for a real food business, canteen, hostel kitchen, restaurant or small food supplier.
+- Ensure the Sanskrit name is displayed correctly, not as broken symbols.
+- Use responsive layouts rather than simply shrinking the desktop page.
+
+PHASE 3 — HOME PAGE
+Create or improve a professional public landing page containing:
+1. AnnaRaksha logo/wordmark and tagline “Predict. Prevent. Redistribute.”
+2. Navigation with Home, Features, How It Works, Sustainability and Login.
+3. A visually attractive hero section showing fresh food, vegetables and responsible food management.
+4. Primary CTA: “Get Started”.
+5. Secondary CTA: “Explore Features”.
+6. Feature cards for Inventory Management, Expiry Risk Detection, AI Agent Solutions, Surplus Planning, Redistribution Tracking and Waste Analytics.
+7. A clear three-step explanation: Track Inventory → Generate Recommendations → Review and Act.
+8. A sustainability section explaining how better inventory decisions can reduce avoidable food waste.
+9. A footer with working navigation, contact/help entry if implemented, privacy information and a disclaimer about the limitations of forecasts.
+10. Every CTA must navigate to the correct page or trigger a real action. Do not leave dead links.
+
+PHASE 4 — LOGIN AND USER ACCESS
+Create a professional login page with:
+- Email and password fields.
+- Show/hide password control.
+- Required-field validation.
+- Email format validation.
+- Clear errors for invalid credentials and authentication failures.
+- Loading state and protection against repeated submissions.
+- Password reset only if it is genuinely supported.
+- Registration only if it is genuinely supported.
+- A working back-to-home link.
+- A clearly labelled demo mode if the environment does not support real authentication.
+
+IMPORTANT AUTHENTICATION RULES:
+- Prefer the existing configured authentication provider if available.
+- If Firebase Authentication is configured, use it correctly and apply appropriate access controls.
+- Never pretend that frontend-only password checking is secure authentication.
+- Never store plaintext passwords.
+- Never put service-account credentials, private keys or privileged secrets in client-side code.
+- Do not invent successful authentication or password-reset functionality.
+- If backend authentication cannot be configured in this environment, clearly identify the limitation and provide a safe demo mode instead of claiming production security.
+- Ensure one user's private inventory cannot be accessed by another user when real multi-user authentication is implemented.
+
+PHASE 5 — NAVIGATION, DROPDOWNS AND THEME
+Create a consistent navigation system with appropriate tabs or routes:
+- Home
+- Dashboard
+- Inventory
+- Expiry Monitor
+- Generate Agent Solution
+- Surplus and Redistribution
+- Analytics
+- Activity History
+- Settings
+
+Use a responsive sidebar on desktop if suitable and a compact navigation menu on mobile. Add a dropdown for secondary navigation or user settings where appropriate.
+
+Add a Light Mode / Dark Mode toggle:
+- It must work on every page.
+- All major surfaces, menus, forms, modals, charts and text must adapt.
+- Remember the user's preference across reloads when suitable storage is available.
+- Prevent unreadable text or low-contrast icons in either mode.
+- Respect the operating system theme as an initial preference if practical.
+- Make dropdowns open and close correctly, support keyboard interaction and close appropriately after navigation.
+- Do not add unnecessary menu items just for appearance.
+
+PHASE 6 — INVENTORY MANAGEMENT
+Create or repair a fully working inventory module.
+
+Each food item should support relevant fields:
+- Item name.
+- Category.
+- Quantity and unit.
+- Purchase or received date.
+- Expiry or best-before date where applicable.
+- Unit cost and total value where supplied.
+- Storage location.
+- Supplier or source if needed.
+- Stock status and notes.
+
+Suggested categories:
+- Dairy
+- Vegetables
+- Fruits
+- Grains and Pulses
+- Bakery
+- Meat and Seafood, if relevant
+- Packaged Foods
+- Other
+
+Required operations:
+1. Add an inventory item.
+2. View the full inventory.
+3. Edit an item.
+4. Delete an item with confirmation.
+5. Search by item name.
+6. Filter by category, expiry status and stock status.
+7. Sort by expiry date, quantity, item name or value.
+8. Update quantities after usage, sale, spoilage or approved actions.
+9. Validate quantity, date and price inputs.
+10. Display meaningful empty states, success messages and error messages.
+11. Prevent accidental duplicate submissions.
+12. Warn about invalid or impossible dates.
+13. Handle zero and negative quantities safely; reject invalid negative stock where the operation requires non-negative inventory.
+14. Never silently discard changes or show success if saving failed.
+
+Use a consistent data model and stable item IDs. Validate all important data on the server as well as in the UI where a backend exists.
+
+PHASE 7 — FOOD IMAGES AND CATEGORY BACKGROUNDS
+Add suitable food imagery to category cards, category headers or image areas within each relevant tab.
+
+Use the following mapping:
+- Dairy: milk bottles, fresh milk or dairy products.
+- Curd: a bowl of fresh curd/yogurt.
+- Vegetables: fresh Indian vegetables such as tomatoes, spinach, potatoes and carrots.
+- Fruits: fresh seasonal fruit.
+- Grains and Pulses: rice, wheat, lentils and pulses.
+- Bakery: bread and bakery products.
+- Meat and Seafood: appropriate food imagery only if this category is enabled.
+- Packaged Foods: packaged pantry products.
+
+Image requirements:
+1. Use distinct, relevant images for each category. Do not use the same generic food photo everywhere.
+2. Prefer reliable, properly licensed assets or image sources supported by the environment.
+3. If remote images fail, display a graceful fallback icon, colour panel or local asset.
+4. Do not let a missing image break a page.
+5. Apply appropriate object-fit, cropping, rounded corners and subtle overlays when text is placed over images.
+6. Maintain readable text contrast over every image.
+7. Use lazy loading where appropriate and avoid excessive large images that slow the application.
+8. Provide accessible alternative text.
+9. Do not claim that a remote image exists unless verified.
+10. Avoid placing busy images behind data tables or important forms. Use images in headers, cards or decorative backgrounds so usability is maintained.
+11. Add subtle hover effects to category cards without affecting readability or performance.
+
+PHASE 8 — EXPIRY MONITOR AND RISK DETECTION
+Create a working expiry-monitoring module that calculates expiry risk using real inventory data.
+
+Required behaviour:
+- Identify already expired items.
+- Identify items expiring soon.
+- Identify low-stock items if minimum-stock thresholds exist.
+- Estimate the quantity and monetary value at risk when the necessary data is available.
+- Show the item's expiry date and the reason for its risk status.
+- Allow filtering and sorting by risk.
+- Update risk calculations when inventory or dates change.
+- Show warnings without falsely claiming that food is unsafe solely because an application date has passed.
+
+Use clear configurable thresholds, such as expired, expiring within three days and expiring within seven days. Keep these thresholds configurable and disclose that different food types have different storage and safety requirements.
+
+Do not treat an AI prediction as a food-safety certification. Avoid recommending consumption or redistribution of food that is expired, recalled, contaminated or otherwise unsuitable. Require applicable food-safety checks before any redistribution action.
+
+PHASE 9 — GENERATE AGENT SOLUTION: CRITICAL FEATURE
+Preserve and thoroughly test the existing Generate Agent Solution feature. This is one of the most important features of the competition project.
+
+The agent must use actual inventory and relevant application context, not merely return the same fixed sample answer every time.
+
+Implement or repair the following workflow:
+1. Read the relevant inventory and current stock information.
+2. Identify potential expiry risks, surplus, demand mismatches and missing information.
+3. Analyse the data using deterministic calculations where possible.
+4. Use the configured Gemini integration for contextual reasoning and recommendations when available.
+5. Produce a structured recommendation containing:
+   - Problem identified.
+   - Evidence from inventory.
+   - Affected food items.
+   - Relevant quantities and dates.
+   - Proposed action.
+   - Reason for the action.
+   - Expected benefit.
+   - Risk and safety considerations.
+   - Any assumptions or missing data.
+   - Whether human approval is required.
+6. Offer appropriate actions such as stock rotation, reducing future purchasing, reviewing meal planning, using suitable stock first, or preparing a redistribution proposal for eligible surplus.
+7. Display a clear loading state during analysis.
+8. Handle missing data, malformed model output, timeouts, rate limits and API failures.
+9. Provide Retry and Cancel where technically appropriate.
+10. Validate all model-generated structured output before using it.
+11. Keep a record of the recommendation, its inputs or relevant references, its timestamp and its status, subject to privacy and data-minimization rules.
+12. Display the recommendation's source and limitations honestly. Never label a deterministic rule as an AI prediction or claim Gemini was used if the API was not called.
+
+AGENT ACTION CONTROL:
+- The agent may propose actions, but it must not perform consequential inventory changes or external redistribution on its own without the required human approval.
+- Include Approve, Reject and, where appropriate, Edit Before Approval.
+- Show the exact proposed changes before approval.
+- Rejecting an action must never apply its proposed changes.
+- Approving an action must validate the proposal, confirm that the relevant inventory still matches the expected state, apply the action once, and record the result.
+- Prevent duplicate execution when a user clicks Approve repeatedly or retries a request.
+- Use stable action IDs and idempotency controls where supported.
+- If an action fails, do not display it as completed. Show the error and allow a safe retry.
+- If the inventory changed after the proposal was generated, flag the stale proposal and require revalidation or regeneration.
+- Use deterministic backend functions for permissions, validation and state changes; do not let the language model bypass them.
+- Never execute arbitrary code, shell commands, SQL or unrestricted tool calls generated by the model.
+- Restrict the agent to a small allowlist of explicitly defined application operations.
+- Do not claim that food was donated, delivered, sold or physically redistributed unless a real integration or user-confirmed record supports that claim.
+
+PHASE 10 — TEST GENERATE AGENT SOLUTION WITH REALISTIC SCENARIOS
+Run the following scenarios against the actual application. Use a test dataset or isolated test environment so that production data is not damaged.
+
+TEST A: Vegetables expiring tomorrow
+Input: 5 kg of tomatoes, expiry tomorrow, cost ₹40/kg, with demand lower than the available quantity.
+Expected: identify the expiry risk, show the affected item and quantity, suggest a sensible safe action, and explain its assumptions. No automatic inventory change should occur before approval.
+
+TEST B: Dairy products nearing expiry
+Input: 12 litres of milk expiring tomorrow and 8 curd containers expiring in two days.
+Expected: identify both items separately, respect their distinct expiry dates, provide item-specific recommendations and avoid unsafe blanket recommendations.
+
+TEST C: Healthy inventory
+Input: 20 kg of rice with an expiry date several months away and sufficient projected demand.
+Expected: do not invent an urgent expiry crisis. Explain that immediate expiry action is unnecessary if the data supports that conclusion.
+
+TEST D: Already expired food
+Input: expired milk and expired vegetables.
+Expected: flag them clearly, exclude them from normal redistribution recommendations and direct the user to applicable food-safety and disposal procedures. Do not recommend serving expired food.
+
+TEST E: Large surplus with no demand data
+Input: 50 kg of vegetables expiring in three days, with no demand history.
+Expected: disclose that demand is unknown, distinguish known facts from estimates, and ask for or clearly state the assumptions needed for forecasting.
+
+TEST F: Low stock
+Input: rice stock below the configured minimum level, with no expiry risk.
+Expected: identify the stock shortage and propose replenishment planning rather than incorrectly recommending disposal.
+
+TEST G: Conflicting inventory data
+Input: quantity is negative, expiry date is invalid, or cost is missing.
+Expected: validate or flag the data, avoid unsupported calculations and request correction where needed.
+
+TEST H: Empty inventory
+Expected: display a useful empty state and explain that inventory must be added before meaningful recommendations can be generated.
+
+TEST I: AI service failure
+Simulate or safely reproduce a model timeout, unavailable API, rate limit or malformed response.
+Expected: show an understandable error, retain existing data, prevent duplicate actions, and offer a retry or a clearly labelled rule-based fallback. Never present fallback results as Gemini-generated results.
+
+TEST J: Approve a recommendation
+Generate a proposal to update an eligible inventory item. Review the proposed change and approve it.
+Expected: apply only the approved, validated change, update the UI, persist the result where persistence is supported and record a completed action in the history.
+
+TEST K: Reject a recommendation
+Generate a proposal and reject it.
+Expected: record the rejection and reason where applicable. The inventory must remain unchanged by the rejected proposal.
+
+TEST L: Double approval
+Click Approve twice quickly or submit the same action twice through the test mechanism.
+Expected: only one state-changing operation occurs. The UI must not create duplicate stock deductions or duplicate completed actions.
+
+TEST M: Stale proposal
+Generate a proposal, change the inventory item, then attempt to approve the original proposal.
+Expected: detect the changed data and require revalidation or regeneration rather than blindly applying the old proposal.
+
+TEST N: Repeated generation
+Generate recommendations more than once with changed inventory data.
+Expected: recommendations should reflect the current data, avoid unsupported invented facts, and handle repeated requests without corrupting the history.
+
+TEST O: Forecasting and financial calculations
+Use inventory with known quantities, prices, dates and demand data.
+Expected: independently verify quantity, cost-at-risk and forecast calculations where sufficient inputs exist. Clearly distinguish exact arithmetic from uncertain predictions.
+
+For every scenario, record the input, expected result, actual result and PASS/FAIL. If the test cannot be executed, label it NOT RUN and explain why. Do not fabricate test results.
+
+PHASE 11 — SURPLUS AND REDISTRIBUTION
+Build or repair a surplus planning page that:
+- Lists eligible surplus items.
+- Displays quantity, relevant dates and estimated value when known.
+- Lets users prepare a redistribution proposal.
+- Includes suitability, storage, transport and food-safety checks.
+- Supports human review and approval.
+- Records the proposal status and any user-confirmed outcome.
+- Shows clear states such as Proposed, Awaiting Approval, Approved, Rejected, Completed and Failed, as appropriate.
+- Never claims to connect to charities, suppliers or delivery services unless that integration is actually implemented.
+- Never treats an unconfirmed proposal as a completed donation.
+
+PHASE 12 — ANALYTICS AND ACTIVITY HISTORY
+Provide useful analytics based on actual application data:
+- Current inventory count.
+- Total stock value when prices are available.
+- Items expiring soon.
+- Expired stock.
+- Quantity and estimated value at risk.
+- Recommendations generated.
+- Approved and rejected actions.
+- Waste or savings metrics only when their calculation and supporting data are available.
+
+Charts and cards must update after relevant state changes. Avoid fabricated metrics and fake live data. For an empty dataset, show zero or an explanatory empty state rather than made-up values.
+
+Activity history should record relevant events, timestamps, action IDs and status changes. Do not expose passwords, API keys, sensitive personal data or unnecessary private information in logs. Make failed actions distinguishable from successful actions.
+
+PHASE 13 — FUNCTIONALITY TEST FOR EVERY CONTROL
+Inspect every visible button, tab, dropdown, link, form, icon button, modal, filter, search box, toggle, table action, card CTA and pagination control.
+
+For each interactive element:
+1. Identify its intended behaviour.
+2. Verify it has a valid event handler or navigation destination.
+3. Activate it using an appropriate test.
+4. Verify the expected result.
+5. Check loading, success, empty and error states where applicable.
+6. Fix dead buttons, invalid routes, duplicate events, broken overlays and state updates that fail.
+7. Check that disabled controls are visibly and semantically disabled.
+8. Ensure clicking a decorative element does not falsely imply it is interactive.
+9. Add confirmation before destructive actions.
+10. Make modal close buttons, Escape handling and outside-click behaviour appropriate and reliable.
+
+Do not make every button perform a meaningless generic action. Each control must fulfil its labelled purpose.
+
+PHASE 14 — ANIMATIONS AND TRANSITIONS
+Add tasteful, consistent animations across the interface:
+- Smooth page or tab transitions.
+- Button hover and pressed states.
+- Dropdown and modal transitions.
+- Card hover effects.
+- Subtle loading indicators or skeletons.
+- Toast notifications.
+- Gentle chart or metric appearance transitions.
+- Image hover effects where appropriate.
+
+Requirements:
+- Keep animations short, smooth and professional.
+- Do not delay form submissions or critical actions for decorative effects.
+- Avoid unnecessary 3D effects, excessive motion or animation that harms performance.
+- Support reduced-motion preferences.
+- Ensure animations do not cause layout shifts, hide controls or interfere with keyboard navigation.
+- Check transitions in both light and dark modes.
+
+PHASE 15 — RESPONSIVE TESTING
+Test the actual application at viewport widths of:
+- 1440 px desktop.
+- 1024 px laptop/tablet landscape.
+- 768 px tablet.
+- 390 px mobile.
+- 320 px narrow mobile.
+
+Verify:
+- No unintended horizontal overflow.
+- Navigation is usable.
+- Dropdowns and modals fit the screen.
+- Tables are responsive or have appropriate horizontal scrolling.
+- Forms and buttons remain readable and touch-friendly.
+- Images crop correctly.
+- Text does not overlap icons or controls.
+- Charts remain understandable.
+- Login and agent recommendation flows work on mobile.
+- Light/dark mode works at each relevant layout.
+- No important feature is hidden or unusable on small screens.
+
+Do not claim a viewport has been tested unless you actually inspected it or ran a suitable automated test.
+
+PHASE 16 — SECURITY AND PRIVACY
+Audit and fix, where applicable:
+- Exposed API keys and secrets.
+- Client-side use of privileged credentials.
+- Missing server-side validation.
+- Unsafe rendering of untrusted model output.
+- Injection risks.
+- Unrestricted AI tool execution.
+- Missing authorization checks.
+- Cross-user data exposure.
+- Unsafe error messages.
+- Unprotected destructive operations.
+- Insecure storage of authentication data.
+- Excessive logging of sensitive information.
+- Dependencies with known relevant vulnerabilities, where scanning tools are available.
+- Missing request validation, rate limiting or abuse protections on exposed endpoints where appropriate.
+
+Use environment secrets or the platform's supported server-side secret mechanism. Never print actual secret values in reports. Never claim security is perfect or audited if only a limited review was performed. Document any remaining security limitations.
+
+PHASE 17 — PERFORMANCE, ACCESSIBILITY AND CODE QUALITY
+- Remove unused dependencies and duplicate logic only when safe.
+- Use efficient rendering and avoid unnecessary repeated API calls.
+- Handle loading and cancellation appropriately.
+- Use pagination or filtering for larger inventories where appropriate.
+- Optimize images and avoid excessive animation.
+- Add semantic labels, keyboard support, visible focus indicators and accessible form errors.
+- Ensure colour contrast in light and dark themes.
+- Add appropriate alt text to images.
+- Check browser console errors and failed network requests when tools permit.
+- Keep calculations and business rules in testable functions.
+- Keep AI prompts, model output parsing, validation and state-changing operations separated.
+- Add automated tests for important utility functions, workflows and API handlers.
+- Avoid swallowing exceptions or logging false success.
+- Preserve existing working architecture unless the audit shows a concrete reason to change it.
+
+PHASE 18 — PERSISTENCE AND DATA INTEGRITY
+Determine how the current application stores data. Test the real mechanism rather than assuming it works.
+
+Verify:
+1. Add an inventory item and refresh the page.
+2. Edit an item and refresh.
+3. Approve an action and refresh.
+4. Reject an action and refresh.
+5. Check whether history and statuses remain consistent.
+6. Test empty, invalid and failed-save scenarios.
+7. If the app uses local storage, clearly explain its limitations and test the expected persistence scope.
+8. If it uses a database, verify reads, writes, error handling and access controls.
+9. If a configured Firebase or other backend is already present, use the existing integration correctly rather than inventing configuration.
+10. Never claim cross-device or multi-user persistence unless it is actually supported and tested.
+
+Do not silently replace a working database with local storage just to avoid configuration problems.
+
+PHASE 19 — GOOGLE TECHNOLOGY
+Use Google technology appropriately and only where it can actually run:
+- Gemini API for genuine contextual recommendations and structured agent reasoning.
+- Firebase Authentication for real authentication if configured.
+- Cloud Firestore for persistence if configured and appropriate.
+- Google-supported hosting or deployment capabilities where relevant to the current project.
+
+Do not add unnecessary services merely to increase the technology count. Do not invent API keys, deployment URLs, service configuration or integrations. Verify model availability and the actual runtime requirements. Keep secrets on the server or in the supported secure configuration. If a required integration cannot be completed in the current environment, explain the exact remaining setup step.
+
+PHASE 20 — AUTOMATED AND END-TO-END TEST EXECUTION
+Use the testing tools already supported by the project. Inspect the available package scripts and test framework before running commands.
+
+1. Run the existing automated tests.
+2. Add or repair tests for inventory validation, expiry classification, calculations, approval, rejection, idempotency, stale proposals and persistence.
+3. Run the production build.
+4. Run appropriate linting or type checks if configured.
+5. Run the end-to-end workflow:
+   - Open the app.
+   - Navigate to inventory.
+   - Add a valid food item.
+   - Confirm it appears in the inventory.
+   - Generate an agent recommendation using the current inventory.
+   - Inspect the proposed action.
+   - Approve it in one test run.
+   - Verify the state change and audit record.
+   - Generate another proposal and reject it.
+   - Verify that rejection does not apply the proposed change.
+   - Refresh the app and verify persistence.
+6. Run the negative tests and responsive tests described above using available automation or browser tools.
+7. Fix failures, rerun the relevant tests and report the final results.
+8. Check that the app starts and routes load correctly.
+9. Never report a passing test unless it actually ran and passed.
+10. If the environment does not permit browser automation, explain the limitation and provide the exact manual checks that remain. Do not mark them as passed.
+
+PHASE 21 — ACCEPTANCE CRITERIA
+Consider the project ready for competition only when the evidence supports the following:
+- The home page and login flow behave correctly within the configured authentication scope.
+- Navigation, dropdowns and theme switching work.
+- Inventory CRUD and validation work.
+- Expiry risk is based on real inventory dates.
+- Generate Agent Solution responds appropriately to the current inventory.
+- Gemini usage is genuine when claimed.
+- Approve and Reject have distinct, correct effects.
+- Duplicate approvals do not duplicate state changes.
+- Failed operations do not display false success.
+- Inventory and action history persist to the extent promised by the actual storage mechanism.
+- Analytics use actual data and correct calculations.
+- Category images are relevant and missing images do not break the app.
+- Main controls work at desktop and mobile sizes.
+- Security and privacy issues have been checked and critical issues fixed.
+- Production build and available automated tests have been executed.
+- Remaining failures and limitations are explicitly documented.
+
+FINAL INSTRUCTIONS:
+Work in this order: inspect the existing app, preserve working features, fix critical bugs, complete the main workflow, improve design and navigation, add images and animations, run tests, fix failures, and rerun tests.
+
+Do not spend all your effort on visual styling while core features are broken. Do not replace real agent behaviour with mock responses. Do not delete the existing working Generate Agent Solution feature. Do not claim that a task, test, integration or security check succeeded without evidence.
+
+At completion, provide a concise report containing:
+1. Files and major components changed.
+2. Features fixed or added.
+3. Whether Gemini is genuinely integrated and which verified model is used.
+4. Test results in a table with PASS, FAIL or NOT RUN.
+5. Results for the end-to-end approval and rejection workflow.
+6. Results for persistence and responsive testing.
+7. Remaining bugs, setup requirements and security limitations.
+8. Any manual test that I still need to perform.
+
+Begin by inspecting the current project now, then implement and verify the improvements. Do not stop after producing a plan.

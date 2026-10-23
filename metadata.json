@@ -1,0 +1,8 @@
+{
+  "name": "ShelfSense AI",
+  "description": "Predict. Prevent. Redistribute. Autonomous food inventory intelligence, risk forecasting, and surplus redistribution platform for institutional kitchens.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

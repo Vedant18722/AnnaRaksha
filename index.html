@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AnnaRaksha (अन्नरक्षा) — Predict. Prevent. Redistribute.</title>
+    <meta name="description" content="AnnaRaksha (अन्नरक्षा) — Autonomous food inventory intelligence, risk forecasting, and surplus redistribution platform for institutional kitchens." />
+    <meta property="og:title" content="AnnaRaksha (अन्नरक्षा) — Predict. Prevent. Redistribute." />
+    <meta property="og:description" content="Autonomous food inventory intelligence, risk forecasting, and surplus redistribution platform for institutional kitchens." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Gujarati:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Telugu:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>
+      (function() {
+        try {
+          var W = window.WebSocket;
+          if (W) {
+            function MockWebSocket(url, proto) {
+              if (proto === 'vite-hmr' || (typeof url === 'string' && (url.indexOf('token=') !== -1 || url.indexOf('24678') !== -1))) {
+                var dummy = new EventTarget();
+                dummy.readyState = 1;
+                dummy.OPEN = 1;
+                dummy.CONNECTING = 0;
+                dummy.CLOSING = 2;
+                dummy.CLOSED = 3;
+                dummy.send = function() {};
+                dummy.close = function() {};
+                dummy.binaryType = 'blob';
+                dummy.bufferedAmount = 0;
+                dummy.extensions = '';
+                dummy.protocol = 'vite-hmr';
+                dummy.url = url;
+                dummy.onopen = null;
+                dummy.onclose = null;
+                dummy.onerror = null;
+                dummy.onmessage = null;
+                setTimeout(function() {
+                  var evt = new Event('open');
+                  if (typeof dummy.onopen === 'function') dummy.onopen(evt);
+                  dummy.dispatchEvent(evt);
+                }, 0);
+                return dummy;
+              }
+              return new W(url, proto);
+            }
+            MockWebSocket.prototype = W.prototype;
+            MockWebSocket.CONNECTING = 0;
+            MockWebSocket.OPEN = 1;
+            MockWebSocket.CLOSING = 2;
+            MockWebSocket.CLOSED = 3;
+            window.WebSocket = MockWebSocket;
+          }
+        } catch(e) {}
+
+        var origError = console.error;
+        console.error = function() {
+          var first = arguments[0];
+          if (
+            typeof first === 'string' &&
+            (first.indexOf('[vite] failed to connect to websocket') !== -1 ||
+             first.indexOf('WebSocket closed without opened') !== -1)
+          ) {
+            return;
+          }
+          if (
+            first &&
+            first.message &&
+            first.message.indexOf('WebSocket closed without opened') !== -1
+          ) {
+            return;
+          }
+          origError.apply(console, arguments);
+        };
+
+        window.addEventListener('error', function(e) {
+          var msg = e.message || (e.error && e.error.message) || '';
+          if (
+            msg.indexOf('WebSocket closed without opened') !== -1 ||
+            msg.indexOf('failed to connect to websocket') !== -1
+          ) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(e) {
+          var reason = e.reason;
+          var msg = (reason && (reason.message || String(reason))) || '';
+          if (
+            msg.indexOf('WebSocket closed without opened') !== -1 ||
+            msg.indexOf('failed to connect to websocket') !== -1
+          ) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
+        }, true);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
